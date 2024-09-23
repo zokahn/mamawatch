@@ -5,13 +5,15 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class MQTTClient:
-    def __init__(self, broker, port, topic):
+    def __init__(self, broker, port, topic, username, password):
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.broker = broker
         self.port = port
         self.topic = topic
+        self.username = username
+        self.password = password
 
     def on_connect(self, client, userdata, flags, rc):
         if rc == 0:
@@ -32,6 +34,8 @@ class MQTTClient:
 
     def start(self):
         try:
+            if self.username and self.password:
+                self.client.username_pw_set(self.username, self.password)
             self.client.connect(self.broker, self.port, 60)
             self.client.loop_start()
             logging.info(f"MQTT client started and connected to {self.broker}:{self.port}")
