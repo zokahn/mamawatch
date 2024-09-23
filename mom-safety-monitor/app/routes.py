@@ -10,11 +10,13 @@ bp = Blueprint('main', __name__)
 def index():
     messages = get_messages()
     amsterdam_tz = pytz.timezone('Europe/Amsterdam')
+    formatted_messages = []
     for message in messages:
         utc_time = datetime.fromisoformat(message[1])
         amsterdam_time = utc_time.replace(tzinfo=pytz.UTC).astimezone(amsterdam_tz)
-        message[1] = amsterdam_time.strftime('%Y-%m-%d %H:%M:%S')
-    return render_template('index.html', messages=messages)
+        formatted_time = amsterdam_time.strftime('%Y-%m-%d %H:%M:%S')
+        formatted_messages.append([message[0], formatted_time] + list(message[2:]))
+    return render_template('index.html', messages=formatted_messages)
 
 @bp.route('/diagnostics')
 def diagnostics():

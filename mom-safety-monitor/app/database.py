@@ -30,7 +30,7 @@ def get_messages():
     conn = sqlite3.connect(DATABASE)
     c = conn.cursor()
     c.execute("SELECT * FROM messages ORDER BY timestamp DESC")
-    messages = c.fetchall()
+    messages = [list(row) for row in c.fetchall()]
     conn.close()
     return messages
 
