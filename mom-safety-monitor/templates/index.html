@@ -18,22 +18,34 @@
         </div>
         <div id="log-container">
             <h2>Event Log</h2>
-            <ul id="event-log">
-                {% for message in messages %}
-                <li>
-                    <strong>Status:</strong> {{ message[2] }}<br>
-                    <strong>Action:</strong> {{ message[3] }}<br>
-                    <strong>Time:</strong> {{ message[1] }}<br>
-                    <strong>Acknowledged:</strong> {{ 'Yes' if message[4] else 'No' }}<br>
-                    {% if message[5] %}
-                    <strong>Note:</strong> {{ message[5] }}<br>
-                    {% endif %}
-                    {% if not message[4] %}
-                    <button class="ack-button" data-message-id="{{ message[0] }}">Acknowledge</button>
-                    {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
+            <table id="event-log">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                        <th>Acknowledged</th>
+                        <th>Note</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for message in messages %}
+                    <tr data-message-id="{{ message[0] }}">
+                        <td>{{ message[1] }}</td>
+                        <td>{{ message[2] }}</td>
+                        <td>{{ message[3] }}</td>
+                        <td>{{ 'Yes' if message[4] else 'No' }}</td>
+                        <td>{{ message[5] or '' }}</td>
+                        <td>
+                            {% if not message[4] %}
+                            <button class="ack-button" data-message-id="{{ message[0] }}">Acknowledge</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
         <div id="acknowledge-form" class="hidden">
             <h2>Acknowledge Event</h2>

@@ -16,7 +16,10 @@ import logging
 from datetime import datetime
 
 def send_button_status(status, action):
+    from app.database import add_message
+    message_id = add_message(status, action)
     socketio.emit('button_status', {
+        'id': message_id,
         'status': status,
         'action': action,
         'button_name': 'Mom\'s Button',

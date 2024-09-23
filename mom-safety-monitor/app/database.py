@@ -21,8 +21,10 @@ def add_message(status, action):
     c = conn.cursor()
     c.execute("INSERT INTO messages (timestamp, status, action, acknowledged) VALUES (?, ?, ?, ?)",
               (datetime.now().isoformat(), status, action, 0))
+    message_id = c.lastrowid
     conn.commit()
     conn.close()
+    return message_id
 
 def get_messages():
     conn = sqlite3.connect(DATABASE)

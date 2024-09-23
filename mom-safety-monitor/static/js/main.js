@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const lastAction = document.getElementById('last-action');
     const messageText = document.getElementById('message-text');
     const messageContainer = document.getElementById('message');
-    const eventLog = document.getElementById('event-log');
+    const eventLog = document.getElementById('event-log').querySelector('tbody');
     const ackForm = document.getElementById('ack-form');
     const ackNote = document.getElementById('ack-note');
     const ackMessageId = document.getElementById('ack-message-id');
@@ -27,15 +27,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Add event to log
-        const logEntry = document.createElement('li');
-        logEntry.innerHTML = `
-            <strong>Status:</strong> ${data.status}<br>
-            <strong>Action:</strong> ${data.action}<br>
-            <strong>Time:</strong> ${new Date(data.timestamp).toLocaleString()}<br>
-            <strong>Acknowledged:</strong> No<br>
-            <button class="ack-button" data-message-id="${data.id}">Acknowledge</button>
+        const newRow = eventLog.insertRow(0);
+        newRow.dataset.messageId = data.id;
+        newRow.innerHTML = `
+            <td>${new Date(data.timestamp).toLocaleString()}</td>
+            <td>${data.status}</td>
+            <td>${data.action}</td>
+            <td>No</td>
+            <td></td>
+            <td><button class="ack-button" data-message-id="${data.id}">Acknowledge</button></td>
         `;
-        eventLog.insertBefore(logEntry, eventLog.firstChild);
     });
 
     eventLog.addEventListener('click', (e) => {
@@ -61,9 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                const acknowledgedEvent = document.querySelector(`[data-message-id="${messageId}"]`).closest('li');
-                acknowledgedEvent.querySelector('.ack-button').remove();
-                acknowledgedEvent.innerHTML = acknowledgedEvent.innerHTML.replace('Acknowledged: No', `Acknowledged: Yes<br><strong>Note:</strong> ${note}`);
+                const acknowledgedRow = document.querySelector(`tr[data-message-id="${messageId}"]`);
+                acknowledgedRow.cells[3].textContent = 'Yes';
+                acknowledgedRow.cells[4].textContent = note;
+                acknowledgedRow.cells[5].textContent = '';
                 acknowledgeFormContainer.classList.add('hidden');
                 ackNote.value = '';
             }
