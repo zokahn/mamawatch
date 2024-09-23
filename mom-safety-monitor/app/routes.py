@@ -44,6 +44,39 @@ def acknowledge_event():
     acknowledge_message(message_id, note)
     return jsonify({"status": "success", "message": "Event acknowledged"})
 
+@bp.route('/get_latest_data')
+def get_latest_data():
+    mqtt_client = MQTTClient._instance
+    messages = get_messages()[:5]  # Get the 5 most recent messages
+    amsterdam_tz = pytz.timezone('Europe/Amsterdam')
+    formatted_messages = []
+    for message in messages:
+        utc_time = datetime.fromisoformat(message[1])
+        amsterdam_time = utc_time.replace(tzinfo=pytz.UTC).astimezone(amsterdam_tz)
+        formatted_time = amsterdam_time.strftime('%Y-%m-%d %H:%M:%S')
+        formatted_messages.append({
+            "id": message[0],
+            "timestamp": formatted_time,
+            "status": message[2],
+            "action": message[3],
+            "acknowledged": bool(message[4]),
+            "note": message[5]
+        })
+    
+    return jsonify({
+        "button_status": {
+            "status": mqtt_client._button_status,
+            "action": mqtt_client._last_action if hasattr(mqtt_client, '_last_action') else None
+        },
+        "device_status": {
+            "battery": mqtt_client._battery_status,
+            "charger": mqtt_client._charger_status,
+            "wifi": mqtt_client._wifi_status,
+            "last_seen": mqtt_client._last_seen
+        },
+        "events": formatted_messages
+    })
+
 def init_mqtt_client(broker, port, topic, username, password):
     mqtt_client = MQTTClient(broker, port, topic, username, password)
     mqtt_client.start()

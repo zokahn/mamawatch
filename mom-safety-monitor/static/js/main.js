@@ -120,4 +120,18 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error:', error);
         });
     }
+
+    function refreshData() {
+        fetch('/get_latest_data')
+        .then(response => response.json())
+        .then(data => {
+            updateButtonStatus(data.button_status);
+            updateDeviceStatus(data.device_status);
+            data.events.forEach(event => addEventToLog(event));
+        })
+        .catch(error => console.error('Error refreshing data:', error));
+    }
+
+    // Refresh data every 30 seconds
+    setInterval(refreshData, 30000);
 });
