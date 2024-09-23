@@ -55,31 +55,41 @@ The Mom's Safety Monitor is designed to provide a simple and effective way to mo
 
 ## Latest Developments
 
-- Implemented a database system for storing messages (messages.db)
-- Added an archived logs feature with a new template (archived_logs.html)
-- Restructured the project directory for better organization
-- Implemented a database module (database.py) for handling data persistence
-- Updated the MQTT client and routes to work with the new structure
+- Implemented bulk acknowledgment functionality for event logs
+- Added checkboxes for selecting multiple entries in the event log
+- Created an archived logs page for viewing historical data
+- Enhanced the main page to show the last 10 and unacknowledged messages
+- Implemented auto-page refresh functionality for real-time updates
+- Improved MQTT client to handle various message types and sensor data correctly
+- Added emergency reset functionality
+- Implemented real-time updates and animations for better user experience
+- Refactored button press log to use a table format
 
 ## Current Features
 
 - Real-time monitoring of Shelly Button1 status
 - Display of button press events (single press, long press, double press)
 - Detailed diagnostic information including battery status, WiFi connection, and more
-- Event logging with acknowledgment functionality
-- WebSocket-based real-time updates
+- Event logging with individual and bulk acknowledgment functionality
+- WebSocket-based real-time updates with animations
 - Data persistence using SQLite database
 - Archived logs view for historical data
+- Auto-refresh functionality for the main page
+- Emergency reset feature
+- Improved error handling for various MQTT message formats
 
 ## Things to Do
 
 1. Implement user authentication for the web interface
 2. Implement Telegram/WhatsApp integration for notifications
-3. Create a mobile-friendly version of the web interface
+3. Enhance the mobile-friendly version of the web interface
 4. Set up automated testing for critical components
 5. Optimize performance for handling multiple concurrent connections
 6. Implement support for multiple Shelly Button1 devices
 7. Enhance the archived logs feature with filtering and sorting options
+8. Implement customizable alert thresholds (e.g., low battery warnings)
+9. Add support for other Shelly devices
+10. Create a mobile app for easier monitoring on-the-go
 
 ## Future Enhancements
 
