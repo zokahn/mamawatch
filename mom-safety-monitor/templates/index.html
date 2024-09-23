@@ -11,6 +11,10 @@
 <body>
     <div class="container">
         <h1 class="animate__animated animate__fadeIn">Mom's Safety Monitor</h1>
+        <div class="user-info">
+            <p>Welcome, {{ current_user.username }}</p>
+            <a href="{{ url_for('main.logout') }}" class="button">Logout</a>
+        </div>
         <div id="status" class="status animate__animated animate__fadeIn">
             <p>Button Status: <span id="button-status" class="disconnected">Waiting...</span></p>
             <p>Last Action: <span id="last-action">None</span></p>
