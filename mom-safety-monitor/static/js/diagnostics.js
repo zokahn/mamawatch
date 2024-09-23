@@ -10,6 +10,17 @@ document.addEventListener('DOMContentLoaded', function() {
         element.className = status.toLowerCase();
     }
 
+    function updateDeviceStatus(data) {
+        document.getElementById('battery-status').textContent = data.battery ? data.battery + '%' : 'Unknown';
+        document.getElementById('charger-status').textContent = data.charger ? 'Charging' : 'Not charging';
+        if (data.wifi) {
+            document.getElementById('wifi-ssid').textContent = data.wifi.ssid || 'Unknown';
+            document.getElementById('wifi-ip').textContent = data.wifi.ip || 'Unknown';
+            document.getElementById('wifi-signal').textContent = data.wifi.rssi ? data.wifi.rssi + ' dBm' : 'Unknown';
+        }
+        document.getElementById('last-seen').textContent = data.last_seen ? new Date(data.last_seen).toLocaleString() : 'Unknown';
+    }
+
     socket.on('connect', function() {
         console.log('Connected to server');
         updateStatus('server-status', 'Connected');
@@ -33,6 +44,12 @@ document.addEventListener('DOMContentLoaded', function() {
     socket.on('button_status', function(data) {
         console.log('Button status update:', data);
         updateStatus('button-status', data.status);
+        lastUpdate.textContent = new Date().toLocaleString();
+    });
+
+    socket.on('device_status', function(data) {
+        console.log('Device status update:', data);
+        updateDeviceStatus(data);
         lastUpdate.textContent = new Date().toLocaleString();
     });
 

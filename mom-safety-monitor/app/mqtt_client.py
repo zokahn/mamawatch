@@ -10,6 +10,10 @@ class MQTTClient:
     _mqtt_status = "disconnected"
     _last_error = None
     _connection_details = {}
+    _battery_status = None
+    _charger_status = None
+    _wifi_status = None
+    _last_seen = None
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -44,24 +48,63 @@ class MQTTClient:
         self._last_error = f"Connection result code: {rc}"
 
     def on_message(self, client, userdata, msg):
+        topic = msg.topic
         payload = msg.payload.decode()
-        logging.info(f"Received message: {payload}")
-        if payload == "1":
+        logging.info(f"Received message on topic {topic}: {payload}")
+
+        if topic.endswith('/input_event/0'):
+            self._process_button_event(payload)
+        elif topic.endswith('/sensor'):
+            self._process_sensor_data(payload)
+        elif topic.endswith('/info'):
+            self._process_info_data(payload)
+
+    def _process_button_event(self, payload):
+        event_data = json.loads(payload)
+        if event_data.get('event') == 'S':
             self._button_status = "call_request"
             send_button_status("call_request")
             logging.info("Button pressed once, call request")
-        elif payload == "long":
+        elif event_data.get('event') == 'L':
             self._button_status = "emergency"
             send_button_status("emergency")
             logging.info("Button long press, emergency")
-        elif payload == "3":
+        elif event_data.get('event') == 'SS':
             self._button_status = "reset"
             send_button_status("reset")
-            logging.info("Button pressed three times, reset action")
+            logging.info("Button pressed twice, reset action")
         else:
             self._button_status = "unknown"
             send_button_status("unknown")
             logging.info(f"Unknown button action: {payload}")
+
+    def _process_sensor_data(self, payload):
+        sensor_data = json.loads(payload)
+        self._battery_status = sensor_data.get('battery')
+        self._charger_status = sensor_data.get('charger')
+        self._last_seen = datetime.now().isoformat()
+        self._update_status()
+
+    def _process_info_data(self, payload):
+        info_data = json.loads(payload)
+        wifi_sta = info_data.get('wifi_sta', {})
+        self._wifi_status = {
+            'connected': wifi_sta.get('connected'),
+            'ssid': wifi_sta.get('ssid'),
+            'ip': wifi_sta.get('ip'),
+            'rssi': wifi_sta.get('rssi')
+        }
+        self._update_status()
+
+    def _update_status(self):
+        from app.websocket import send_device_status
+        status = {
+            'battery': self._battery_status,
+            'charger': self._charger_status,
+            'wifi': self._wifi_status,
+            'last_seen': self._last_seen
+        }
+        send_device_status(status)
 
     def start(self):
         try:
@@ -81,7 +124,8 @@ class MQTTClient:
         if rc == 0:
             self._mqtt_status = "connected"
             logging.info("Connected to MQTT broker successfully")
-            client.subscribe(self.topic)
+            base_topic = self.topic.rsplit('/', 1)[0]  # Remove the last part of the topic
+            client.subscribe(f"{base_topic}/+")  # Subscribe to all subtopics
         else:
             self._mqtt_status = "error"
             self._last_error = f"Connection failed with result code {rc}"

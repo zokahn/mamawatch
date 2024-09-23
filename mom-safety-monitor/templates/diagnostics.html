@@ -43,6 +43,15 @@
                 <p><span class="status-label">Topic:</span> {{ connection_details.topic }}</p>
                 <p><span class="status-label">Username:</span> {{ connection_details.username }}</p>
             </div>
+            <div class="status-container">
+                <h2>Device Status</h2>
+                <p><span class="status-label">Battery:</span> <span id="battery-status">Unknown</span></p>
+                <p><span class="status-label">Charger:</span> <span id="charger-status">Unknown</span></p>
+                <p><span class="status-label">WiFi SSID:</span> <span id="wifi-ssid">Unknown</span></p>
+                <p><span class="status-label">WiFi IP:</span> <span id="wifi-ip">Unknown</span></p>
+                <p><span class="status-label">WiFi Signal:</span> <span id="wifi-signal">Unknown</span></p>
+                <p><span class="status-label">Last Seen:</span> <span id="last-seen">Unknown</span></p>
+            </div>
         </div>
         <a href="/" class="button">Back to Home</a>
     </div>
