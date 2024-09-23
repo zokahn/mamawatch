@@ -36,7 +36,7 @@ mom-safety-monitor/
 
 1. Clone the repository
 2. Install dependencies: `pip install -r requirements.txt`
-3. Configure MQTT settings in `config.py`
+3. MQTT settings are pre-configured in `config.py` (no action required)
 4. Connect the LED to the Raspberry Pi (refer to hardware setup instructions)
 5. Run the application: `python run.py`
 
