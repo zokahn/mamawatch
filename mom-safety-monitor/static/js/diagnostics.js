@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
     socket.on('mqtt_status', function(data) {
         console.log('MQTT status update:', data);
         updateStatus('mqtt-status', data.status);
+        if (data.last_error) {
+            document.getElementById('last-error').textContent = data.last_error;
+        }
         lastUpdate.textContent = new Date().toLocaleString();
     });
 
@@ -31,6 +34,16 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Button status update:', data);
         updateStatus('button-status', data.status);
         lastUpdate.textContent = new Date().toLocaleString();
+    });
+
+    socket.on('connection_details', function(data) {
+        console.log('Connection details update:', data);
+        for (let key in data) {
+            let element = document.getElementById(key + '-detail');
+            if (element) {
+                element.textContent = data[key];
+            }
+        }
     });
 
     // Request initial status

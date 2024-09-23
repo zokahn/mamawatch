@@ -8,6 +8,8 @@ class MQTTClient:
     _instance = None
     _button_status = "unknown"
     _mqtt_status = "disconnected"
+    _last_error = None
+    _connection_details = {}
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -24,6 +26,12 @@ class MQTTClient:
             self.topic = topic
             self.username = username
             self.password = password
+            self._connection_details = {
+                "broker": broker,
+                "port": port,
+                "topic": topic,
+                "username": username
+            }
 
     def on_connect(self, client, userdata, flags, rc):
         if rc == 0:
@@ -59,9 +67,11 @@ class MQTTClient:
             self.client.connect(self.broker, self.port, 60)
             self.client.loop_start()
             self._mqtt_status = "connected"
+            self._last_error = None
             logging.info(f"MQTT client started and connected to {self.broker}:{self.port}")
         except Exception as e:
             self._mqtt_status = "error"
+            self._last_error = str(e)
             logging.error(f"Failed to start MQTT client: {str(e)}")
 
     def stop(self):
@@ -77,3 +87,11 @@ class MQTTClient:
     @classmethod
     def get_button_status(cls):
         return cls._button_status
+
+    @classmethod
+    def get_last_error(cls):
+        return cls._last_error
+
+    @classmethod
+    def get_connection_details(cls):
+        return cls._connection_details

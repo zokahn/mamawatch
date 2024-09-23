@@ -24,6 +24,9 @@
             <div class="status-container">
                 <h2>MQTT Status</h2>
                 <p><span class="status-label">Connection:</span> <span id="mqtt-status">{{ mqtt_status }}</span></p>
+                {% if last_error %}
+                <p><span class="status-label">Last Error:</span> <span id="last-error">{{ last_error }}</span></p>
+                {% endif %}
             </div>
             <div class="status-container">
                 <h2>Button Status</h2>
@@ -32,6 +35,13 @@
             <div class="status-container">
                 <h2>Last Update</h2>
                 <p><span id="last-update">Never</span></p>
+            </div>
+            <div class="status-container">
+                <h2>Connection Details</h2>
+                <p><span class="status-label">Broker:</span> {{ connection_details.broker }}</p>
+                <p><span class="status-label">Port:</span> {{ connection_details.port }}</p>
+                <p><span class="status-label">Topic:</span> {{ connection_details.topic }}</p>
+                <p><span class="status-label">Username:</span> {{ connection_details.username }}</p>
             </div>
         </div>
         <a href="/" class="button">Back to Home</a>

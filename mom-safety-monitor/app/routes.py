@@ -11,7 +11,13 @@ def index():
 def diagnostics():
     mqtt_status = MQTTClient.get_status()
     button_status = MQTTClient.get_button_status()
-    return render_template('diagnostics.html', mqtt_status=mqtt_status, button_status=button_status)
+    last_error = MQTTClient.get_last_error()
+    connection_details = MQTTClient.get_connection_details()
+    return render_template('diagnostics.html', 
+                           mqtt_status=mqtt_status, 
+                           button_status=button_status, 
+                           last_error=last_error, 
+                           connection_details=connection_details)
 
 def init_mqtt_client(broker, port, topic, username, password):
     mqtt_client = MQTTClient(broker, port, topic, username, password)
