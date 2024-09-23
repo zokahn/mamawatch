@@ -15,16 +15,17 @@ from app import socketio
 import logging
 from datetime import datetime
 
-def send_button_status(status, action):
+def send_button_status(status, action=None):
     from app.database import add_message
     message_id = add_message(status, action)
-    socketio.emit('button_status', {
+    button_status = {
         'id': message_id,
         'status': status,
         'action': action,
         'button_name': 'Mom\'s Button',
         'timestamp': datetime.now().isoformat()
-    })
+    }
+    socketio.emit('button_status', button_status)
     logging.info(f"Sent button status: {status}, action: {action}")
     
     if status == "normal":

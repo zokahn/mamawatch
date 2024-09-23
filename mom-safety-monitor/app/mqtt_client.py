@@ -63,7 +63,10 @@ class MQTTClient:
                 elif 'sensor' in topic_parts:
                     sensor_type = topic_parts[-1]
                     if sensor_type == 'battery':
-                        self._process_sensor_data(payload)
+                        self._process_battery_data(payload)
+                    elif sensor_type == 'charger':
+                        self._charger_status = payload.lower() == 'true'
+                        self._update_status()
                     else:
                         logging.info(f"Received sensor data for {sensor_type}: {payload}")
                 elif 'input_event' in topic_parts:
@@ -117,6 +120,14 @@ class MQTTClient:
             except ValueError:
                 logging.error(f"Unable to process sensor data: {payload}")
                 return
+        self._last_seen = datetime.now().isoformat()
+        self._update_status()
+
+    def _process_battery_data(self, payload):
+        try:
+            self._battery_status = int(payload)
+        except ValueError:
+            logging.error(f"Unable to process battery data: {payload}")
         self._last_seen = datetime.now().isoformat()
         self._update_status()
 
@@ -207,14 +218,15 @@ class MQTTClient:
         self._update_status()
 
     def _update_status(self):
-        from app.websocket import send_device_status
-        status = {
+        from app.websocket import send_device_status, send_button_status
+        device_status = {
             'battery': self._battery_status,
             'charger': self._charger_status,
             'wifi': self._wifi_status,
             'last_seen': self._last_seen
         }
-        send_device_status(status)
+        send_device_status(device_status)
+        send_button_status(self._button_status, self._last_action)
 
     def start(self):
         try:
