@@ -51,6 +51,42 @@ document.addEventListener('DOMContentLoaded', () => {
         acknowledgeEvent(messageId, note);
     });
 
+    const bulkAcknowledgeForm = document.getElementById('bulk-acknowledge-form');
+    bulkAcknowledgeForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const selectedMessages = Array.from(document.querySelectorAll('input[name="selected_messages"]:checked')).map(checkbox => checkbox.value);
+        const note = prompt("Enter a note for the selected messages:");
+        if (note !== null) {
+            acknowledgeBulkEvents(selectedMessages, note);
+        }
+    });
+
+    function acknowledgeBulkEvents(messageIds, note) {
+        fetch('/acknowledge_bulk_events', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message_ids: messageIds, note: note }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                messageIds.forEach(id => {
+                    const row = document.querySelector(`tr[data-message-id="${id}"]`);
+                    row.cells[4].textContent = 'Yes';
+                    row.cells[5].textContent = note;
+                    row.cells[6].textContent = '';
+                    row.classList.add('animated', 'flash');
+                    row.querySelector('input[type="checkbox"]').disabled = true;
+                });
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
     socket.on('disconnect', () => {
         console.log('WebSocket connection closed');
         buttonStatus.textContent = 'Disconnected';

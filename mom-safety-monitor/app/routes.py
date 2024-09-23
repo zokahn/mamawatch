@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request
 from app.mqtt_client import MQTTClient
-from app.database import get_messages, acknowledge_message
+from app.database import get_messages, acknowledge_message, get_archived_messages
 from datetime import datetime
 import pytz
 
@@ -8,7 +8,7 @@ bp = Blueprint('main', __name__)
 
 @bp.route('/')
 def index():
-    messages = get_messages()
+    messages = get_messages(limit=10, include_unacknowledged=True)
     amsterdam_tz = pytz.timezone('Europe/Amsterdam')
     formatted_messages = []
     for message in messages:
@@ -17,6 +17,18 @@ def index():
         formatted_time = amsterdam_time.strftime('%Y-%m-%d %H:%M:%S')
         formatted_messages.append([message[0], formatted_time] + list(message[2:]))
     return render_template('index.html', messages=formatted_messages)
+
+@bp.route('/archived_logs')
+def archived_logs():
+    messages = get_archived_messages()
+    amsterdam_tz = pytz.timezone('Europe/Amsterdam')
+    formatted_messages = []
+    for message in messages:
+        utc_time = datetime.fromisoformat(message[1])
+        amsterdam_time = utc_time.replace(tzinfo=pytz.UTC).astimezone(amsterdam_tz)
+        formatted_time = amsterdam_time.strftime('%Y-%m-%d %H:%M:%S')
+        formatted_messages.append([message[0], formatted_time] + list(message[2:]))
+    return render_template('archived_logs.html', messages=formatted_messages)
 
 @bp.route('/diagnostics')
 def diagnostics():
@@ -43,6 +55,13 @@ def acknowledge_event():
     note = request.json.get('note', '')
     acknowledge_message(message_id, note)
     return jsonify({"status": "success", "message": "Event acknowledged"})
+
+@bp.route('/acknowledge_bulk_events', methods=['POST'])
+def acknowledge_bulk_events():
+    message_ids = request.json.get('message_ids', [])
+    note = request.json.get('note', '')
+    acknowledge_multiple_messages(message_ids, note)
+    return jsonify({"status": "success", "message": "Events acknowledged"})
 
 @bp.route('/get_latest_data')
 def get_latest_data():
