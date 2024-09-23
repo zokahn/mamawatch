@@ -54,14 +54,22 @@ class MQTTClient:
         payload = msg.payload.decode()
         logging.info(f"Received message on topic {topic}: {payload}")
 
-        if topic.endswith('/input_event/0'):
-            self._process_button_event(payload)
-        elif topic.endswith('/sensor'):
-            self._process_sensor_data(payload)
-        elif topic.endswith('/info'):
-            self._process_info_data(payload)
-        elif topic == 'shellies/announce':
-            self._process_announce_data(payload)
+        topic_parts = topic.split('/')
+        if topic_parts[0] == 'shellies':
+            if topic_parts[1] == 'announce':
+                self._process_announce_data(payload)
+            elif len(topic_parts) > 2:
+                device_id = topic_parts[1]
+                if topic_parts[2] == 'sensor':
+                    self._process_sensor_data(payload)
+                elif topic_parts[2] == 'input_event' and topic_parts[3] == '0':
+                    self._process_input_event(payload)
+                elif topic_parts[2] == 'info':
+                    self._process_info_data(payload)
+                else:
+                    logging.warning(f"Unhandled topic: {topic}")
+            else:
+                logging.warning(f"Unhandled topic: {topic}")
         else:
             logging.warning(f"Unhandled topic: {topic}")
 
@@ -115,6 +123,37 @@ class MQTTClient:
             'rssi': 'N/A'
         }
         self._last_seen = datetime.now().isoformat()
+        self._update_status()
+
+    def _process_sensor_data(self, payload):
+        sensor_data = json.loads(payload)
+        self._battery_status = sensor_data.get('battery')
+        self._charger_status = sensor_data.get('charger')
+        self._update_status()
+
+    def _process_input_event(self, payload):
+        event_data = json.loads(payload)
+        if event_data.get('event') == 'S':
+            self._button_status = "call_request"
+        elif event_data.get('event') == 'L':
+            self._button_status = "emergency"
+        elif event_data.get('event') == 'SS':
+            self._button_status = "reset"
+        else:
+            self._button_status = "unknown"
+        self._update_status()
+
+    def _process_info_data(self, payload):
+        info_data = json.loads(payload)
+        wifi_sta = info_data.get('wifi_sta', {})
+        self._wifi_status = {
+            'connected': wifi_sta.get('connected'),
+            'ssid': wifi_sta.get('ssid'),
+            'ip': wifi_sta.get('ip'),
+            'rssi': wifi_sta.get('rssi')
+        }
+        self._battery_status = info_data.get('bat', {}).get('value')
+        self._charger_status = info_data.get('charger')
         self._update_status()
 
     def _update_status(self):
