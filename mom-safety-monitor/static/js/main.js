@@ -1,8 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const buttonStatus = document.getElementById('button-status');
-    const ledStatus = document.getElementById('led-status');
-    const helpMessage = document.getElementById('help-message');
-    const ledToggle = document.getElementById('led-toggle');
+    const lastAction = document.getElementById('last-action');
+    const messageText = document.getElementById('message-text');
+    const messageContainer = document.getElementById('message');
+    const eventLog = document.getElementById('event-log');
+    const ackForm = document.getElementById('ack-form');
+    const ackNote = document.getElementById('ack-note');
 
     const socket = io();
 
@@ -11,31 +14,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     socket.on('button_status', (data) => {
-        if (data.status === 'pressed') {
-            buttonStatus.textContent = 'Pressed';
-            buttonStatus.style.color = '#FF6B6B';
-            helpMessage.classList.remove('hidden');
+        buttonStatus.textContent = data.status;
+        lastAction.textContent = data.action;
+
+        if (data.status === 'call_request' || data.status === 'emergency') {
+            messageText.textContent = data.status === 'call_request' ? 'Help requested by Mom' : 'Emergency! Mom needs immediate assistance!';
+            messageContainer.classList.remove('hidden');
         } else {
-            buttonStatus.textContent = 'Not Pressed';
-            buttonStatus.style.color = '#4CAF50';
-            helpMessage.classList.add('hidden');
+            messageContainer.classList.add('hidden');
         }
+
+        // Add event to log
+        const logEntry = document.createElement('li');
+        logEntry.innerHTML = `
+            <strong>Button:</strong> ${data.button_name}<br>
+            <strong>Action:</strong> ${data.action}<br>
+            <strong>Time:</strong> ${new Date(data.timestamp).toLocaleString()}<br>
+            <strong>Acknowledged:</strong> <span class="ack-status">No</span><br>
+            <strong>Note:</strong> <span class="ack-note"></span>
+        `;
+        eventLog.insertBefore(logEntry, eventLog.firstChild);
     });
 
-    socket.on('led_status', (data) => {
-        ledStatus.textContent = data.status === 'on' ? 'On' : 'Off';
-        ledStatus.style.color = data.status === 'on' ? '#4CAF50' : '#FF6B6B';
-    });
-
-    ledToggle.addEventListener('click', () => {
-        const currentStatus = ledStatus.textContent.toLowerCase();
-        const newStatus = currentStatus === 'on' ? 'led_off' : 'led_on';
-        socket.emit('led_control', newStatus);
+    ackForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const latestEvent = eventLog.firstChild;
+        if (latestEvent) {
+            latestEvent.querySelector('.ack-status').textContent = 'Yes';
+            latestEvent.querySelector('.ack-note').textContent = ackNote.value;
+            socket.emit('acknowledge_event', { note: ackNote.value });
+            ackNote.value = '';
+        }
     });
 
     socket.on('disconnect', () => {
         console.log('WebSocket connection closed');
         buttonStatus.textContent = 'Disconnected';
-        buttonStatus.style.color = '#FFA500';
     });
 });
