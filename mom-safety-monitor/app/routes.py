@@ -1,11 +1,25 @@
-from flask import Blueprint, render_template, jsonify, request, redirect, url_for
-from flask_login import login_required, logout_user
+from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash
+from flask_login import login_required, logout_user, login_user
 from app.mqtt_client import MQTTClient
 from app.database import get_messages, acknowledge_message, get_archived_messages, acknowledge_multiple_messages
 from datetime import datetime
 import pytz
+from app.models import User
 
 bp = Blueprint('main', __name__)
+
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.authenticate(username, password)
+        if user:
+            login_user(user)
+            return redirect(url_for('main.index'))
+        else:
+            flash('Invalid username or password')
+    return render_template('login.html')
 
 @bp.route('/')
 @login_required
@@ -69,7 +83,7 @@ def acknowledge_bulk_events():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.login'))
 
 @bp.route('/get_latest_data')
 def get_latest_data():
