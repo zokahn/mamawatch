@@ -102,6 +102,8 @@ def main():
         
         logger.info("Starting Flask-SocketIO server")
         socketio.run(app, debug=os.getenv('DEBUG', 'False').lower() == 'true', host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
+    except KeyboardInterrupt:
+        logger.info("Received keyboard interrupt, shutting down...")
     except Exception as e:
         logger.error(f"An error occurred: {str(e)}")
     finally:
