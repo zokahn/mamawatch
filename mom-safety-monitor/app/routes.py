@@ -1,10 +1,11 @@
-from flask import render_template, jsonify
-from app import app, socketio
+from flask import Blueprint, render_template, jsonify
+from app import socketio
 from app.mqtt_client import MQTTClient
 
+bp = Blueprint('main', __name__)
 mqtt_client = None
 
-@app.route('/')
+@bp.route('/')
 def index():
     return render_template('index.html')
 
