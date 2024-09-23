@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request
 from app.mqtt_client import MQTTClient
-from app.database import get_messages, acknowledge_message, get_archived_messages
+from app.database import get_messages, acknowledge_message, get_archived_messages, acknowledge_multiple_messages
 from datetime import datetime
 import pytz
 
