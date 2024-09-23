@@ -47,7 +47,20 @@ document.addEventListener('DOMContentLoaded', function() {
     socket.on('button_status', function(data) {
         console.log('Button status update:', data);
         updateStatus('button-status', data.status);
+        document.getElementById('last-action').textContent = data.action;
         lastUpdate.textContent = new Date().toLocaleString();
+        
+        // Add event to log
+        var logEntry = document.createElement('li');
+        logEntry.innerHTML = `
+            <strong>Button:</strong> ${data.button_name}<br>
+            <strong>Action:</strong> ${data.action}<br>
+            <strong>Time:</strong> ${new Date(data.timestamp).toLocaleString()}<br>
+            <strong>Acknowledged:</strong> <span class="ack-status">No</span><br>
+            <strong>Note:</strong> <span class="ack-note"></span>
+        `;
+        var eventLog = document.getElementById('event-log');
+        eventLog.insertBefore(logEntry, eventLog.firstChild);
     });
 
     socket.on('device_status', function(data) {
@@ -68,6 +81,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Request initial status
     socket.emit('get_status');
+
+    // Handle acknowledge form submission
+    var ackForm = document.getElementById('ack-form');
+    var ackNote = document.getElementById('ack-note');
+    ackForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var latestEvent = document.getElementById('event-log').firstChild;
+        if (latestEvent) {
+            latestEvent.querySelector('.ack-status').textContent = 'Yes';
+            latestEvent.querySelector('.ack-note').textContent = ackNote.value;
+            socket.emit('acknowledge_event', { note: ackNote.value });
+            ackNote.value = '';
+        }
+    });
 });
 document.addEventListener('DOMContentLoaded', function() {
     var socket = io();
