@@ -26,6 +26,12 @@ def send_button_status(status, action):
         'timestamp': datetime.now().isoformat()
     })
     logging.info(f"Sent button status: {status}, action: {action}")
+    
+    if status == "normal":
+        socketio.emit('emergency_reset', {
+            'message': 'Emergency has been reset'
+        })
+        logging.info("Emergency reset signal sent")
 
 def send_led_status(status):
     socketio.emit('led_status', {'status': status})

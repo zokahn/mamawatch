@@ -27,6 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDeviceStatus(data);
     });
 
+    socket.on('emergency_reset', (data) => {
+        console.log('Emergency reset:', data.message);
+        messageContainer.classList.add('hidden');
+        messageContainer.classList.remove('animated', 'pulse');
+        buttonStatus.textContent = 'Normal';
+        lastAction.textContent = 'Emergency Reset';
+    });
+
     eventLog.addEventListener('click', (e) => {
         if (e.target.classList.contains('ack-button')) {
             const messageId = e.target.getAttribute('data-message-id');
@@ -58,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             messageText.textContent = data.status === 'call_request' ? 'Help requested by Mom' : 'Emergency! Mom needs immediate assistance!';
             messageContainer.classList.remove('hidden');
             messageContainer.classList.add('animated', 'pulse');
-        } else {
+        } else if (data.status === 'normal') {
             messageContainer.classList.add('hidden');
             messageContainer.classList.remove('animated', 'pulse');
         }
