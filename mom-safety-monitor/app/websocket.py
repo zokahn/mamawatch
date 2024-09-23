@@ -13,10 +13,16 @@ def handle_disconnect():
 from flask_socketio import emit
 from app import socketio
 import logging
+from datetime import datetime
 
-def send_button_status(status):
-    socketio.emit('button_status', {'status': status})
-    logging.info(f"Sent button status: {status}")
+def send_button_status(status, action):
+    socketio.emit('button_status', {
+        'status': status,
+        'action': action,
+        'button_name': 'Mom\'s Button',
+        'timestamp': datetime.now().isoformat()
+    })
+    logging.info(f"Sent button status: {status}, action: {action}")
 
 def send_led_status(status):
     socketio.emit('led_status', {'status': status})
@@ -28,13 +34,24 @@ def handle_connect():
     mqtt_client = MQTTClient._instance
     if mqtt_client:
         emit('mqtt_status', {'status': mqtt_client._mqtt_status})
-        emit('button_status', {'status': mqtt_client._button_status})
+        emit('button_status', {
+            'status': mqtt_client._button_status,
+            'action': mqtt_client._last_action,
+            'button_name': 'Mom\'s Button',
+            'timestamp': datetime.now().isoformat()
+        })
         emit('device_status', {
             'battery': mqtt_client._battery_status,
             'charger': mqtt_client._charger_status,
             'wifi': mqtt_client._wifi_status,
             'last_seen': mqtt_client._last_seen
         })
+
+@socketio.on('acknowledge_event')
+def handle_acknowledge(data):
+    note = data.get('note', '')
+    logging.info(f"Event acknowledged with note: {note}")
+    # Here you would typically update a database or perform some action
 
 def send_mqtt_status(status):
     socketio.emit('mqtt_status', {'status': status})
