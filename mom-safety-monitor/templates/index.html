@@ -11,11 +11,16 @@
         <h1>Mom's Safety Monitor</h1>
         <div id="status" class="status">
             <p>Button Status: <span id="button-status">Waiting...</span></p>
+            <p>LED Status: <span id="led-status">Off</span></p>
         </div>
         <div id="help-message" class="help-message hidden">
             <p>Hulp gevraagd door mama</p>
         </div>
+        <div class="led-control">
+            <button id="led-toggle">Toggle LED</button>
+        </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
