@@ -56,22 +56,22 @@ class MQTTClient:
 
         topic_parts = topic.split('/')
         if topic_parts[0] == 'shellies':
-            if topic_parts[1] == 'announce':
+            if topic_parts[-1] == 'announce':
                 self._process_announce_data(payload)
-            elif len(topic_parts) > 2:
-                device_id = topic_parts[1]
-                if topic_parts[2] == 'sensor':
+            elif 'sensor' in topic_parts:
+                sensor_type = topic_parts[-1]
+                if sensor_type == 'battery':
                     self._process_sensor_data(payload)
-                elif topic_parts[2] == 'input_event' and topic_parts[3] == '0':
-                    self._process_input_event(payload)
-                elif topic_parts[2] == 'info':
-                    self._process_info_data(payload)
-                elif topic_parts[2] == 'state':
-                    self._process_state_data(payload)
-                elif topic_parts[2] == 'online':
-                    self._process_online_status(payload)
                 else:
-                    logging.warning(f"Unhandled topic: {topic}")
+                    logging.info(f"Received sensor data for {sensor_type}: {payload}")
+            elif 'input_event' in topic_parts:
+                self._process_input_event(payload)
+            elif topic_parts[-1] == 'info':
+                self._process_info_data(payload)
+            elif topic_parts[-1] == 'state':
+                self._process_state_data(payload)
+            elif topic_parts[-1] == 'online':
+                self._process_online_status(payload)
             else:
                 logging.warning(f"Unhandled topic: {topic}")
         else:
@@ -130,9 +130,17 @@ class MQTTClient:
         self._update_status()
 
     def _process_sensor_data(self, payload):
-        sensor_data = json.loads(payload)
-        self._battery_status = sensor_data.get('battery')
-        self._charger_status = sensor_data.get('charger')
+        try:
+            sensor_data = json.loads(payload)
+            self._battery_status = sensor_data.get('battery')
+            self._charger_status = sensor_data.get('charger')
+        except json.JSONDecodeError:
+            # If payload is not JSON, assume it's a direct battery value
+            try:
+                self._battery_status = int(payload)
+            except ValueError:
+                logging.error(f"Unable to process sensor data: {payload}")
+                return
         self._update_status()
 
     def _process_input_event(self, payload):
