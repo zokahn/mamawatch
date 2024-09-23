@@ -66,6 +66,10 @@ class MQTTClient:
                     self._process_input_event(payload)
                 elif topic_parts[2] == 'info':
                     self._process_info_data(payload)
+                elif topic_parts[2] == 'state':
+                    self._process_state_data(payload)
+                elif topic_parts[2] == 'online':
+                    self._process_online_status(payload)
                 else:
                     logging.warning(f"Unhandled topic: {topic}")
             else:
@@ -156,6 +160,18 @@ class MQTTClient:
         self._charger_status = info_data.get('charger')
         self._update_status()
 
+    def _process_state_data(self, payload):
+        state_data = json.loads(payload)
+        self._battery_status = state_data.get('battery', {}).get('percent')
+        self._charger_status = state_data.get('external_power') == 1
+        self._update_status()
+
+    def _process_online_status(self, payload):
+        online_status = payload.lower() == 'true'
+        if online_status:
+            self._last_seen = datetime.now().isoformat()
+        self._update_status()
+
     def _update_status(self):
         from app.websocket import send_device_status
         status = {
@@ -185,7 +201,8 @@ class MQTTClient:
             self._mqtt_status = "connected"
             logging.info("Connected to MQTT broker successfully")
             base_topic = self.topic.rsplit('/', 1)[0]  # Remove the last part of the topic
-            client.subscribe(f"{base_topic}/+")  # Subscribe to all subtopics
+            client.subscribe(f"{base_topic}/#")  # Subscribe to all subtopics
+            client.subscribe("shellies/announce")  # Subscribe to announce messages
         else:
             self._mqtt_status = "error"
             self._last_error = f"Connection failed with result code {rc}"
