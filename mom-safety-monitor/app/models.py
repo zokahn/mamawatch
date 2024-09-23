@@ -26,6 +26,9 @@ class User(UserMixin):
         if user and check_password_hash(user.password_hash, password):
             return user
         return None
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
