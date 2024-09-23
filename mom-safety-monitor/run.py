@@ -10,19 +10,22 @@ load_dotenv()
 # Add the current directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-from app import socketio
+from app import create_app, socketio
 from app.mqtt_client import MQTTClient
-from app.routes import bp
+from app.routes import bp, init_mqtt_client
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # Create Flask app
-app = Flask(__name__, template_folder='templates')
+app = create_app()
 
 # Register the Blueprint
 app.register_blueprint(bp)
+
+# Initialize SocketIO with the app
+socketio.init_app(app)
 
 def main():
     mqtt_client = MQTTClient(
