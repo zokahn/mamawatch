@@ -18,11 +18,11 @@ logger = logging.getLogger(__name__)
 
 def main():
     mqtt_client = MQTTClient(
-        os.getenv('MQTT_BROKER'),
-        int(os.getenv('MQTT_PORT')),
-        os.getenv('MQTT_TOPIC'),
-        os.getenv('MQTT_USERNAME'),
-        os.getenv('MQTT_PASSWORD')
+        os.getenv('MQTT_BROKER', 'mqtt.zokahn.com'),
+        int(os.getenv('MQTT_PORT', '1883')),
+        os.getenv('MQTT_TOPIC', 'shellies/shellybutton1-485519F00C7B'),
+        os.getenv('MQTT_USERNAME', 'bvandenh'),
+        os.getenv('MQTT_PASSWORD', 'SJBC9]-+78bs')
     )
     
     try:
