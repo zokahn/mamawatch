@@ -53,6 +53,8 @@ class MQTTClient:
         topic = msg.topic
         payload = msg.payload.decode()
         logging.info(f"Received message on topic {topic}: {payload}")
+        
+        try:
 
         topic_parts = topic.split('/')
         if topic_parts[0] == 'shellies':
@@ -106,6 +108,8 @@ class MQTTClient:
         self._charger_status = sensor_data.get('charger')
         self._last_seen = datetime.now().isoformat()
         self._update_status()
+        except Exception as e:
+            logging.error(f"Error processing message: {str(e)}")
 
     def _process_info_data(self, payload):
         info_data = json.loads(payload)
@@ -141,6 +145,7 @@ class MQTTClient:
             except ValueError:
                 logging.error(f"Unable to process sensor data: {payload}")
                 return
+        self._last_seen = datetime.now().isoformat()
         self._update_status()
 
     def _process_input_event(self, payload):
