@@ -22,11 +22,6 @@ app = Flask(__name__, template_folder='templates')
 
 # Import routes after creating the app
 from app import routes
-from flask import render_template
-
-@app.route('/')
-def index():
-    return render_template('index.html')
 
 def main():
     mqtt_client = MQTTClient(
