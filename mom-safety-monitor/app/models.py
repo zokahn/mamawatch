@@ -18,6 +18,6 @@ class User(UserMixin):
     @staticmethod
     def authenticate(username, password):
         user = User.get(1)  # In a real app, you would search for the user by username
-        if user and check_password_hash(user.password_hash, password):
+        if user and user.username == username and check_password_hash(user.password_hash, password):
             return user
         return None
