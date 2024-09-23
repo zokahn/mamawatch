@@ -5,18 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mom's Safety Monitor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 </head>
 <body>
     <div class="container">
-        <h1>Mom's Safety Monitor</h1>
-        <div id="status" class="status">
-            <p>Button Status: <span id="button-status">Waiting...</span></p>
+        <h1 class="animate__animated animate__fadeIn">Mom's Safety Monitor</h1>
+        <div id="status" class="status animate__animated animate__fadeIn">
+            <p>Button Status: <span id="button-status" class="disconnected">Waiting...</span></p>
             <p>Last Action: <span id="last-action">None</span></p>
         </div>
-        <div id="message" class="message hidden">
+        <div id="device-status" class="device-status animate__animated animate__fadeIn">
+            <!-- Device status will be populated by JavaScript -->
+        </div>
+        <div id="message" class="message hidden animate__animated">
             <p id="message-text"></p>
         </div>
-        <div id="log-container">
+        <div id="log-container" class="animate__animated animate__fadeIn">
             <h2>Event Log</h2>
             <table id="event-log">
                 <thead>
@@ -47,7 +51,7 @@
                 </tbody>
             </table>
         </div>
-        <div id="acknowledge-form" class="hidden">
+        <div id="acknowledge-form" class="hidden animate__animated animate__fadeIn">
             <h2>Acknowledge Event</h2>
             <form id="ack-form">
                 <input type="hidden" id="ack-message-id">
@@ -57,7 +61,7 @@
             </form>
         </div>
     </div>
-    <a href="{{ url_for('main.diagnostics') }}" class="button">View Diagnostics</a>
+    <a href="{{ url_for('main.diagnostics') }}" class="button animate__animated animate__fadeIn">View Diagnostics</a>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
