@@ -20,6 +20,7 @@
             <button id="led-toggle">Toggle LED</button>
         </div>
     </div>
+    <a href="{{ url_for('diagnostics') }}" class="button">View Diagnostics</a>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

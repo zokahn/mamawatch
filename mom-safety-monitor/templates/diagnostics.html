@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mom's Safety Monitor - Diagnostics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Mom's Safety Monitor - Diagnostics</h1>
+        <div id="diagnostics">
+            <h2>MQTT Status</h2>
+            <p>Connection: <span id="mqtt-status">{{ mqtt_status }}</span></p>
+            <h2>Button Status</h2>
+            <p>Last known state: <span id="button-status">{{ button_status }}</span></p>
+        </div>
+        <a href="/" class="button">Back to Home</a>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='js/diagnostics.js') }}"></script>
+</body>
+</html>
