@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, render_template, jsonify, request, redirect, url_for
+from flask_login import login_required, logout_user
 from app.mqtt_client import MQTTClient
 from app.database import get_messages, acknowledge_message, get_archived_messages, acknowledge_multiple_messages
 from datetime import datetime
@@ -7,6 +8,7 @@ import pytz
 bp = Blueprint('main', __name__)
 
 @bp.route('/')
+@login_required
 def index():
     messages = get_messages(limit=10, include_unacknowledged=True)
     amsterdam_tz = pytz.timezone('Europe/Amsterdam')
@@ -62,6 +64,12 @@ def acknowledge_bulk_events():
     note = request.json.get('note', '')
     acknowledge_multiple_messages(message_ids, note)
     return jsonify({"status": "success", "message": "Events acknowledged"})
+
+@bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('main.index'))
 
 @bp.route('/get_latest_data')
 def get_latest_data():
