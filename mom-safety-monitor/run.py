@@ -29,8 +29,9 @@ app.register_blueprint(bp)
 socketio.init_app(app)
 
 def main():
-    # Initialize the database
-    init_db()
+    with app.app_context():
+        # Initialize the database
+        init_db()
 
     mqtt_client = MQTTClient(
         os.getenv('MQTT_BROKER', 'mqtt.zokahn.com'),

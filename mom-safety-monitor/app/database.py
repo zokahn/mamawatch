@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 from flask import current_app, g
+from werkzeug.security import generate_password_hash
 
 DATABASE = 'app.db'
 
@@ -17,8 +18,27 @@ def close_db(e=None):
 
 def init_db():
     db = get_db()
-    with current_app.open_resource('schema.sql') as f:
-        db.executescript(f.read().decode('utf8'))
+    db.execute('''CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        is_admin BOOLEAN NOT NULL DEFAULT 0
+    )''')
+    db.execute('''CREATE TABLE IF NOT EXISTS messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp TEXT,
+        status TEXT,
+        action TEXT,
+        acknowledged INTEGER,
+        note TEXT
+    )''')
+    
+    # Create initial admin user
+    admin_password = 'admin'  # Change this to a secure password
+    admin_password_hash = generate_password_hash(admin_password)
+    db.execute('INSERT OR IGNORE INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)',
+               ('admin', admin_password_hash, 1))
+    db.commit()
 
 def add_message(status, action):
     conn = sqlite3.connect(DATABASE)
