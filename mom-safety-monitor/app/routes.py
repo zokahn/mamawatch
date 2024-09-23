@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash
-from flask_login import login_required, logout_user, login_user
+from flask_login import login_required, logout_user, login_user, current_user
 from app.mqtt_client import MQTTClient
 from app.database import get_messages, acknowledge_message, get_archived_messages, acknowledge_multiple_messages
 from datetime import datetime
@@ -7,6 +7,68 @@ import pytz
 from app.models import User
 
 bp = Blueprint('main', __name__)
+
+@bp.route('/admin')
+@login_required
+def admin():
+    if not current_user.is_admin:
+        flash('You do not have permission to access this page.')
+        return redirect(url_for('main.index'))
+    users = User.get_all()
+    return render_template('admin.html', users=users)
+
+@bp.route('/admin/create_user', methods=['POST'])
+@login_required
+def create_user():
+    if not current_user.is_admin:
+        flash('You do not have permission to perform this action.')
+        return redirect(url_for('main.index'))
+    username = request.form['username']
+    password = request.form['password']
+    is_admin = 'is_admin' in request.form
+    User.create(username, password, is_admin)
+    flash('User created successfully.')
+    return redirect(url_for('main.admin'))
+
+@bp.route('/admin/update_user/<int:user_id>', methods=['POST'])
+@login_required
+def update_user(user_id):
+    if not current_user.is_admin:
+        flash('You do not have permission to perform this action.')
+        return redirect(url_for('main.index'))
+    username = request.form['username']
+    password = request.form['password'] if request.form['password'] else None
+    is_admin = 'is_admin' in request.form
+    User.update(user_id, username, password, is_admin)
+    flash('User updated successfully.')
+    return redirect(url_for('main.admin'))
+
+@bp.route('/admin/delete_user/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    if not current_user.is_admin:
+        flash('You do not have permission to perform this action.')
+        return redirect(url_for('main.index'))
+    User.delete(user_id)
+    flash('User deleted successfully.')
+    return redirect(url_for('main.admin'))
+
+@bp.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')
+
+@bp.route('/profile/reset_password', methods=['POST'])
+@login_required
+def reset_password():
+    current_password = request.form['current_password']
+    new_password = request.form['new_password']
+    if current_user.check_password(current_password):
+        current_user.set_password(new_password)
+        flash('Password updated successfully.')
+    else:
+        flash('Current password is incorrect.')
+    return redirect(url_for('main.profile'))
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():

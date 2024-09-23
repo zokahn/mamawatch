@@ -13,6 +13,10 @@
         <h1 class="animate__animated animate__fadeIn">Mom's Safety Monitor</h1>
         <div class="user-info">
             <p>Welcome, {{ current_user.username }}</p>
+            <a href="{{ url_for('main.profile') }}" class="button">Profile</a>
+            {% if current_user.is_admin %}
+            <a href="{{ url_for('main.admin') }}" class="button">Admin Panel</a>
+            {% endif %}
             <a href="{{ url_for('main.logout') }}" class="button">Logout</a>
         </div>
         <div id="status" class="status animate__animated animate__fadeIn">

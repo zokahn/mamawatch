@@ -1,20 +1,24 @@
 import sqlite3
 from datetime import datetime
+from flask import current_app, g
 
-DATABASE = 'messages.db'
+DATABASE = 'app.db'
+
+def get_db():
+    if 'db' not in g:
+        g.db = sqlite3.connect(DATABASE)
+        g.db.row_factory = sqlite3.Row
+    return g.db
+
+def close_db(e=None):
+    db = g.pop('db', None)
+    if db is not None:
+        db.close()
 
 def init_db():
-    conn = sqlite3.connect(DATABASE)
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS messages
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  timestamp TEXT,
-                  status TEXT,
-                  action TEXT,
-                  acknowledged INTEGER,
-                  note TEXT)''')
-    conn.commit()
-    conn.close()
+    db = get_db()
+    with current_app.open_resource('schema.sql') as f:
+        db.executescript(f.read().decode('utf8'))
 
 def add_message(status, action):
     conn = sqlite3.connect(DATABASE)
