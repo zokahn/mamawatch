@@ -9,6 +9,12 @@ mqtt_client = None
 def index():
     return render_template('index.html')
 
+@bp.route('/diagnostics')
+def diagnostics():
+    mqtt_status = MQTTClient.get_status()
+    button_status = MQTTClient.get_button_status()
+    return render_template('diagnostics.html', mqtt_status=mqtt_status, button_status=button_status)
+
 @socketio.on('led_control')
 def handle_led_control(message):
     global mqtt_client
