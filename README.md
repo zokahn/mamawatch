@@ -17,25 +17,33 @@ The Mom's Safety Monitor is designed to provide a simple and effective way to mo
 ## Directory Structure
 
 ```
-mom-safety-monitor/
-├── app/
-│   ├── __init__.py
+.
+├── README.md
+├── app
 │   ├── mqtt_client.py
-│   ├── routes.py
-│   └── websocket.py
-├── static/
-│   ├── css/
-│   │   └── style.css
-│   └── js/
-│       ├── main.js
-│       └── diagnostics.js
-├── templates/
-│   ├── index.html
-│   └── diagnostics.html
+│   └── routes.py
 ├── config.py
-├── requirements.txt
-├── run.py
-└── .env
+└── mom-safety-monitor
+    ├── app
+    │   ├── __init__.py
+    │   ├── database.py
+    │   ├── mqtt_client.py
+    │   ├── routes.py
+    │   └── websocket.py
+    ├── config.py
+    ├── messages.db
+    ├── requirements.txt
+    ├── run.py
+    ├── static
+    │   ├── css
+    │   │   └── style.css
+    │   └── js
+    │       ├── diagnostics.js
+    │       └── main.js
+    └── templates
+        ├── archived_logs.html
+        ├── diagnostics.html
+        └── index.html
 ```
 
 ## Setup and Installation
@@ -47,29 +55,31 @@ mom-safety-monitor/
 
 ## Latest Developments
 
-- Implemented comprehensive MQTT client to handle various Shelly Button1 events and status updates
-- Created a detailed diagnostics page for monitoring device status
-- Added event logging functionality with acknowledgment feature
-- Improved error handling and logging throughout the application
-- Updated the web interface to display more detailed device information
+- Implemented a database system for storing messages (messages.db)
+- Added an archived logs feature with a new template (archived_logs.html)
+- Restructured the project directory for better organization
+- Implemented a database module (database.py) for handling data persistence
+- Updated the MQTT client and routes to work with the new structure
 
-## Development Log
+## Current Features
 
-- 2023-09-23: Initial project setup and implementation of core functionality
-- 2023-09-24: Implemented error handling and logging for MQTT client
-- 2023-09-25: Added comprehensive device status monitoring and diagnostics page
-- 2023-09-26: Implemented event logging and acknowledgment functionality
-- 2023-09-27: Refactored MQTT client to handle various Shelly Button1 topics and payloads
+- Real-time monitoring of Shelly Button1 status
+- Display of button press events (single press, long press, double press)
+- Detailed diagnostic information including battery status, WiFi connection, and more
+- Event logging with acknowledgment functionality
+- WebSocket-based real-time updates
+- Data persistence using SQLite database
+- Archived logs view for historical data
 
 ## Things to Do
 
 1. Implement user authentication for the web interface
-2. Add data persistence for event logs and device status history
-3. Implement Telegram/WhatsApp integration for notifications
-4. Create a mobile-friendly version of the web interface
-5. Set up automated testing for critical components
-6. Optimize performance for handling multiple concurrent connections
-7. Implement support for multiple Shelly Button1 devices
+2. Implement Telegram/WhatsApp integration for notifications
+3. Create a mobile-friendly version of the web interface
+4. Set up automated testing for critical components
+5. Optimize performance for handling multiple concurrent connections
+6. Implement support for multiple Shelly Button1 devices
+7. Enhance the archived logs feature with filtering and sorting options
 
 ## Future Enhancements
 
