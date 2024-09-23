@@ -9,10 +9,17 @@ def index():
 
 @bp.route('/diagnostics')
 def diagnostics():
-    mqtt_status = MQTTClient.get_status()
-    button_status = MQTTClient.get_button_status()
-    last_error = MQTTClient.get_last_error()
-    connection_details = MQTTClient.get_connection_details()
+    mqtt_client = MQTTClient._instance
+    if mqtt_client:
+        mqtt_status = mqtt_client._mqtt_status
+        button_status = mqtt_client._button_status
+        last_error = mqtt_client._last_error
+        connection_details = mqtt_client._connection_details
+    else:
+        mqtt_status = "unknown"
+        button_status = "unknown"
+        last_error = "MQTT client not initialized"
+        connection_details = {}
     return render_template('diagnostics.html', 
                            mqtt_status=mqtt_status, 
                            button_status=button_status, 

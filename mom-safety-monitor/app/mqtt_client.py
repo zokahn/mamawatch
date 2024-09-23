@@ -37,8 +37,11 @@ class MQTTClient:
         if rc == 0:
             logging.info(f"Connected to MQTT broker successfully")
             client.subscribe(self.topic)
+            self._mqtt_status = "connected"
         else:
             logging.error(f"Failed to connect to MQTT broker with result code {rc}")
+            self._mqtt_status = "error"
+        self._last_error = f"Connection result code: {rc}"
 
     def on_message(self, client, userdata, msg):
         payload = msg.payload.decode()
