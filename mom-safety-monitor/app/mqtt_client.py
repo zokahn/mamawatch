@@ -55,33 +55,34 @@ class MQTTClient:
         logging.info(f"Received message on topic {topic}: {payload}")
         
         try:
-
-        topic_parts = topic.split('/')
-        if topic_parts[0] == 'shellies':
-            if topic_parts[-1] == 'announce':
-                self._process_announce_data(payload)
-            elif 'sensor' in topic_parts:
-                sensor_type = topic_parts[-1]
-                if sensor_type == 'battery':
-                    self._process_sensor_data(payload)
+            topic_parts = topic.split('/')
+            if topic_parts[0] == 'shellies':
+                if topic_parts[-1] == 'announce':
+                    self._process_announce_data(payload)
+                elif 'sensor' in topic_parts:
+                    sensor_type = topic_parts[-1]
+                    if sensor_type == 'battery':
+                        self._process_sensor_data(payload)
+                    else:
+                        logging.info(f"Received sensor data for {sensor_type}: {payload}")
+                elif 'input_event' in topic_parts:
+                    self._process_input_event(payload)
+                elif topic_parts[-1] == 'info':
+                    self._process_info_data(payload)
+                elif topic_parts[-1] == 'state':
+                    self._process_state_data(payload)
+                elif topic_parts[-1] == 'online':
+                    self._process_online_status(payload)
                 else:
-                    logging.info(f"Received sensor data for {sensor_type}: {payload}")
-            elif 'input_event' in topic_parts:
-                self._process_input_event(payload)
-            elif topic_parts[-1] == 'info':
-                self._process_info_data(payload)
-            elif topic_parts[-1] == 'state':
-                self._process_state_data(payload)
-            elif topic_parts[-1] == 'online':
-                self._process_online_status(payload)
+                    logging.warning(f"Unhandled topic: {topic}")
             else:
                 logging.warning(f"Unhandled topic: {topic}")
-        else:
-            logging.warning(f"Unhandled topic: {topic}")
 
-        # Log current state after processing
-        logging.info(f"Current state: Button: {self._button_status}, Battery: {self._battery_status}, "
-                     f"Charger: {self._charger_status}, WiFi: {self._wifi_status}, Last seen: {self._last_seen}")
+            # Log current state after processing
+            logging.info(f"Current state: Button: {self._button_status}, Battery: {self._battery_status}, "
+                         f"Charger: {self._charger_status}, WiFi: {self._wifi_status}, Last seen: {self._last_seen}")
+        except Exception as e:
+            logging.error(f"Error processing message: {str(e)}")
 
     def _process_button_event(self, payload):
         event_data = json.loads(payload)
@@ -103,13 +104,19 @@ class MQTTClient:
             logging.info(f"Unknown button action: {payload}")
 
     def _process_sensor_data(self, payload):
-        sensor_data = json.loads(payload)
-        self._battery_status = sensor_data.get('battery')
-        self._charger_status = sensor_data.get('charger')
+        try:
+            sensor_data = json.loads(payload)
+            self._battery_status = sensor_data.get('battery')
+            self._charger_status = sensor_data.get('charger')
+        except json.JSONDecodeError:
+            # If payload is not JSON, assume it's a direct battery value
+            try:
+                self._battery_status = int(payload)
+            except ValueError:
+                logging.error(f"Unable to process sensor data: {payload}")
+                return
         self._last_seen = datetime.now().isoformat()
         self._update_status()
-        except Exception as e:
-            logging.error(f"Error processing message: {str(e)}")
 
     def _process_info_data(self, payload):
         info_data = json.loads(payload)
