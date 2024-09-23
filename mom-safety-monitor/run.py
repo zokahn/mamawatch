@@ -23,6 +23,9 @@ app = Flask(__name__, template_folder='templates')
 # Import routes after creating the app
 from app import routes
 
+# Register the Blueprint
+app.register_blueprint(routes.bp)
+
 def main():
     mqtt_client = MQTTClient(
         os.getenv('MQTT_BROKER', 'mqtt.zokahn.com'),
