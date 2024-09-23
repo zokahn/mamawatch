@@ -36,7 +36,7 @@ mom-safety-monitor/
 
 1. Clone the repository
 2. Install dependencies: `pip install -r requirements.txt`
-3. MQTT settings are pre-configured in `config.py` (no action required)
+3. MQTT settings are pre-configured in `mom-safety-monitor/config.py` (no action required)
 4. Connect the LED to the Raspberry Pi (refer to hardware setup instructions)
 5. Run the application: `python run.py`
 
@@ -48,6 +48,7 @@ mom-safety-monitor/
 - Designed a simple web interface with CSS styling
 - Implemented JavaScript for updating button status and controlling LED in real-time
 - Added error handling and logging throughout the application
+- Updated MQTT configuration with correct broker details
 
 ## Development Log
 
@@ -58,6 +59,7 @@ mom-safety-monitor/
 - 2023-09-24: Integrated button press detection with MQTT client
 - 2023-09-24: Updated WebSocket communication and frontend UI to display button status
 - 2023-09-25: Added LED control functionality and updated MQTT client
+- 2023-09-25: Updated MQTT configuration with correct broker details
 
 ## Things to Do
 
