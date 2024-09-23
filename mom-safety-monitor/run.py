@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 from dotenv import load_dotenv
+from flask import Flask
 
 # Load environment variables
 load_dotenv()
@@ -9,12 +10,18 @@ load_dotenv()
 # Add the current directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-from app import app, socketio
+from app import socketio
 from app.mqtt_client import MQTTClient
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# Create Flask app
+app = Flask(__name__, template_folder='templates')
+
+# Import routes after creating the app
+from app import routes
 
 def main():
     mqtt_client = MQTTClient(
