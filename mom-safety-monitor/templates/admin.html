@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Mom's Safety Monitor</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Mom's Safety Monitor{% endblock %}
+
+{% block content %}
     <div class="container">
         <h1>Admin Panel</h1>
-        <a href="{{ url_for('main.index') }}" class="button">Back to Home</a>
         
         <h2>Create New User</h2>
         <form action="{{ url_for('main.create_user') }}" method="POST">
@@ -55,5 +50,4 @@
             </tbody>
         </table>
     </div>
-</body>
-</html>
+{% endblock %}

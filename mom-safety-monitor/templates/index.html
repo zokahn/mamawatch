@@ -1,24 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mom's Safety Monitor</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% extends "base.html" %}
+
+{% block extra_head %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <meta http-equiv="refresh" content="60">
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <div class="container">
         <h1 class="animate__animated animate__fadeIn">Mom's Safety Monitor</h1>
-        <div class="user-info">
-            <p>Welcome, {{ current_user.username }}</p>
-            <a href="{{ url_for('main.profile') }}" class="button">Profile</a>
-            {% if current_user.is_admin %}
-            <a href="{{ url_for('main.admin') }}" class="button">Admin Panel</a>
-            {% endif %}
-            <a href="{{ url_for('main.logout') }}" class="button">Logout</a>
-        </div>
         <div id="status" class="status animate__animated animate__fadeIn">
             <p>Button Status: <span id="button-status" class="disconnected">Waiting...</span></p>
             <p>Last Action: <span id="last-action">None</span></p>
@@ -64,7 +53,6 @@
                 </table>
                 <button type="submit" id="bulk-acknowledge-button">Acknowledge Selected</button>
             </form>
-            <a href="{{ url_for('main.archived_logs') }}" class="button">View Archived Logs</a>
         </div>
         <div id="acknowledge-form" class="hidden animate__animated animate__fadeIn">
             <h2>Acknowledge Event</h2>
@@ -76,8 +64,9 @@
             </form>
         </div>
     </div>
-    <a href="{{ url_for('main.diagnostics') }}" class="button animate__animated animate__fadeIn">View Diagnostics</a>
+{% endblock %}
+
+{% block scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body>
-</html>
+{% endblock %}

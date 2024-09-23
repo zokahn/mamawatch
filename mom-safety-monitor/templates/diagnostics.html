@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mom's Safety Monitor - Diagnostics</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% extends "base.html" %}
+
+{% block title %}Mom's Safety Monitor - Diagnostics{% endblock %}
+
+{% block extra_head %}
     <style>
         .status-container { margin-bottom: 20px; }
         .status-label { font-weight: bold; }
@@ -12,8 +10,9 @@
         .disconnected, .error { color: red; }
         .unknown { color: orange; }
     </style>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <div class="container">
         <h1>Mom's Safety Monitor - Diagnostics</h1>
         <div id="diagnostics">
@@ -57,9 +56,10 @@
                 <pre id="debug-info">Waiting for data...</pre>
             </div>
         </div>
-        <a href="/" class="button">Back to Home</a>
     </div>
+{% endblock %}
+
+{% block scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="{{ url_for('static', filename='js/diagnostics.js') }}"></script>
-</body>
-</html>
+{% endblock %}
