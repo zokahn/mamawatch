@@ -69,13 +69,37 @@ class MQTTClient:
                 self.client.username_pw_set(self.username, self.password)
             self.client.connect(self.broker, self.port, 60)
             self.client.loop_start()
-            self._mqtt_status = "connected"
+            self._mqtt_status = "connecting"
             self._last_error = None
-            logging.info(f"MQTT client started and connected to {self.broker}:{self.port}")
+            logging.info(f"MQTT client started and connecting to {self.broker}:{self.port}")
         except Exception as e:
             self._mqtt_status = "error"
             self._last_error = str(e)
             logging.error(f"Failed to start MQTT client: {str(e)}")
+
+    def on_connect(self, client, userdata, flags, rc):
+        if rc == 0:
+            self._mqtt_status = "connected"
+            logging.info("Connected to MQTT broker successfully")
+            client.subscribe(self.topic)
+        else:
+            self._mqtt_status = "error"
+            self._last_error = f"Connection failed with result code {rc}"
+            logging.error(f"Failed to connect to MQTT broker with result code {rc}")
+        self._connection_details = {
+            "broker": self.broker,
+            "port": self.port,
+            "topic": self.topic,
+            "username": self.username
+        }
+        from app.websocket import send_mqtt_status
+        send_mqtt_status(self._mqtt_status)
+
+    def on_disconnect(self, client, userdata, rc):
+        self._mqtt_status = "disconnected"
+        logging.info("Disconnected from MQTT broker")
+        from app.websocket import send_mqtt_status
+        send_mqtt_status(self._mqtt_status)
 
     def stop(self):
         self.client.loop_stop()
