@@ -35,14 +35,22 @@ class MQTTClient:
     def on_message(self, client, userdata, msg):
         payload = msg.payload.decode()
         logging.info(f"Received message: {payload}")
-        if payload == "pressed":
-            self._button_status = "pressed"
-            send_button_status("pressed")
-            logging.info("Button pressed, sent 'pressed' status")
+        if payload == "1":
+            self._button_status = "call_request"
+            send_button_status("call_request")
+            logging.info("Button pressed once, call request")
+        elif payload == "long":
+            self._button_status = "emergency"
+            send_button_status("emergency")
+            logging.info("Button long press, emergency")
+        elif payload == "3":
+            self._button_status = "reset"
+            send_button_status("reset")
+            logging.info("Button pressed three times, reset action")
         else:
-            self._button_status = "not_pressed"
-            send_button_status("not_pressed")
-            logging.info("Button not pressed, sent 'not_pressed' status")
+            self._button_status = "unknown"
+            send_button_status("unknown")
+            logging.info(f"Unknown button action: {payload}")
 
     def start(self):
         try:
