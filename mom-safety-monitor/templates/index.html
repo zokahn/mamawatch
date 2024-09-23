@@ -18,11 +18,27 @@
         </div>
         <div id="log-container">
             <h2>Event Log</h2>
-            <ul id="event-log"></ul>
+            <ul id="event-log">
+                {% for message in messages %}
+                <li>
+                    <strong>Status:</strong> {{ message[2] }}<br>
+                    <strong>Action:</strong> {{ message[3] }}<br>
+                    <strong>Time:</strong> {{ message[1] }}<br>
+                    <strong>Acknowledged:</strong> {{ 'Yes' if message[4] else 'No' }}<br>
+                    {% if message[5] %}
+                    <strong>Note:</strong> {{ message[5] }}<br>
+                    {% endif %}
+                    {% if not message[4] %}
+                    <button class="ack-button" data-message-id="{{ message[0] }}">Acknowledge</button>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
         </div>
-        <div id="acknowledge-form">
+        <div id="acknowledge-form" class="hidden">
             <h2>Acknowledge Event</h2>
             <form id="ack-form">
+                <input type="hidden" id="ack-message-id">
                 <label for="ack-note">Note:</label>
                 <textarea id="ack-note" rows="3"></textarea>
                 <button type="submit">Acknowledge</button>

@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from app import create_app, socketio
 from app.mqtt_client import MQTTClient
 from app.routes import bp, init_mqtt_client
+from app.database import init_db
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -28,6 +29,9 @@ app.register_blueprint(bp)
 socketio.init_app(app)
 
 def main():
+    # Initialize the database
+    init_db()
+
     mqtt_client = MQTTClient(
         os.getenv('MQTT_BROKER', 'mqtt.zokahn.com'),
         int(os.getenv('MQTT_PORT', '1883')),

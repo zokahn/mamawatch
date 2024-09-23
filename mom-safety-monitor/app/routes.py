@@ -1,12 +1,14 @@
 from flask import Blueprint, render_template, jsonify, request
 from app.mqtt_client import MQTTClient
+from app.database import get_messages, acknowledge_message
 from datetime import datetime
 
 bp = Blueprint('main', __name__)
 
 @bp.route('/')
 def index():
-    return render_template('index.html')
+    messages = get_messages()
+    return render_template('index.html', messages=messages)
 
 @bp.route('/diagnostics')
 def diagnostics():
@@ -29,9 +31,9 @@ def diagnostics():
 
 @bp.route('/acknowledge_event', methods=['POST'])
 def acknowledge_event():
+    message_id = request.json.get('message_id')
     note = request.json.get('note', '')
-    # Here you would typically update a database or perform some action
-    # For now, we'll just return a success message
+    acknowledge_message(message_id, note)
     return jsonify({"status": "success", "message": "Event acknowledged"})
 
 def init_mqtt_client(broker, port, topic, username, password):

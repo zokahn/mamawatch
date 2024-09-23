@@ -161,12 +161,20 @@ class MQTTClient:
         event_data = json.loads(payload)
         if event_data.get('event') == 'S':
             self._button_status = "call_request"
+            action = "Single press"
         elif event_data.get('event') == 'L':
             self._button_status = "emergency"
+            action = "Long press"
         elif event_data.get('event') == 'SS':
             self._button_status = "reset"
+            action = "Double press"
         else:
             self._button_status = "unknown"
+            action = "Unknown action"
+        
+        from app.database import add_message
+        add_message(self._button_status, action)
+        
         self._update_status()
 
     def _process_info_data(self, payload):
