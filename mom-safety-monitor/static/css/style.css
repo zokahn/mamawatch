@@ -1,0 +1,63 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #FFF5E6;
+    color: #4A4A4A;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: #FF6B6B;
+    margin-bottom: 30px;
+}
+
+.status, .help-message {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status p {
+    font-size: 18px;
+    margin: 0;
+}
+
+#button-status {
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.help-message {
+    background-color: #FF6B6B;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .status p, .help-message p {
+        font-size: 16px;
+    }
+}
