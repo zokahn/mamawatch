@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('wifi-signal').textContent = data.wifi.rssi ? data.wifi.rssi + ' dBm' : 'Unknown';
         }
         document.getElementById('last-seen').textContent = data.last_seen ? new Date(data.last_seen).toLocaleString() : 'Unknown';
+        
+        // Update debug information
+        document.getElementById('debug-info').textContent = JSON.stringify(data, null, 2);
     }
 
     socket.on('connect', function() {

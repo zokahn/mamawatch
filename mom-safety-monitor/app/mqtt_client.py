@@ -60,6 +60,12 @@ class MQTTClient:
             self._process_sensor_data(payload)
         elif topic.endswith('/info'):
             self._process_info_data(payload)
+        else:
+            logging.warning(f"Unhandled topic: {topic}")
+
+        # Log current state after processing
+        logging.info(f"Current state: Button: {self._button_status}, Battery: {self._battery_status}, "
+                     f"Charger: {self._charger_status}, WiFi: {self._wifi_status}, Last seen: {self._last_seen}")
 
     def _process_button_event(self, payload):
         event_data = json.loads(payload)
