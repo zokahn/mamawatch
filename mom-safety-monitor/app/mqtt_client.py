@@ -60,6 +60,8 @@ class MQTTClient:
             self._process_sensor_data(payload)
         elif topic.endswith('/info'):
             self._process_info_data(payload)
+        elif topic == 'shellies/announce':
+            self._process_announce_data(payload)
         else:
             logging.warning(f"Unhandled topic: {topic}")
 
@@ -102,6 +104,17 @@ class MQTTClient:
             'ip': wifi_sta.get('ip'),
             'rssi': wifi_sta.get('rssi')
         }
+        self._update_status()
+
+    def _process_announce_data(self, payload):
+        announce_data = json.loads(payload)
+        self._wifi_status = {
+            'connected': True,
+            'ssid': 'N/A',
+            'ip': announce_data.get('ip'),
+            'rssi': 'N/A'
+        }
+        self._last_seen = datetime.now().isoformat()
         self._update_status()
 
     def _update_status(self):
