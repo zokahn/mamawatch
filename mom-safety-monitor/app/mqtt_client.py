@@ -16,6 +16,7 @@ class MQTTClient:
     _charger_status = None
     _wifi_status = None
     _last_seen = None
+    _last_action = None
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -105,6 +106,7 @@ class MQTTClient:
 
     def _process_sensor_data(self, payload):
         try:
+            # First, try to parse as JSON
             sensor_data = json.loads(payload)
             self._battery_status = sensor_data.get('battery')
             self._charger_status = sensor_data.get('charger')

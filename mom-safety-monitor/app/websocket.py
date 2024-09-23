@@ -29,14 +29,14 @@ def send_led_status(status):
     logging.info(f"Sent LED status: {status}")
 
 @socketio.on('connect')
-def handle_connect():
+def handle_connect(auth):
     from app.mqtt_client import MQTTClient
     mqtt_client = MQTTClient._instance
     if mqtt_client:
         emit('mqtt_status', {'status': mqtt_client._mqtt_status})
         emit('button_status', {
             'status': mqtt_client._button_status,
-            'action': mqtt_client._last_action,
+            'action': mqtt_client._last_action if hasattr(mqtt_client, '_last_action') else None,
             'button_name': 'Mom\'s Button',
             'timestamp': datetime.now().isoformat()
         })
