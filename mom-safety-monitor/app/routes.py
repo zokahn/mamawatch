@@ -2,12 +2,18 @@ from flask import Blueprint, render_template, jsonify, request
 from app.mqtt_client import MQTTClient
 from app.database import get_messages, acknowledge_message
 from datetime import datetime
+import pytz
 
 bp = Blueprint('main', __name__)
 
 @bp.route('/')
 def index():
     messages = get_messages()
+    amsterdam_tz = pytz.timezone('Europe/Amsterdam')
+    for message in messages:
+        utc_time = datetime.fromisoformat(message[1])
+        amsterdam_time = utc_time.replace(tzinfo=pytz.UTC).astimezone(amsterdam_tz)
+        message[1] = amsterdam_time.strftime('%Y-%m-%d %H:%M:%S')
     return render_template('index.html', messages=messages)
 
 @bp.route('/diagnostics')
