@@ -16,9 +16,9 @@ CREATE TABLE IF NOT EXISTS messages (
 
 -- Create initial admin user
 INSERT OR IGNORE INTO users (username, password_hash, is_admin) 
-VALUES ('admin', 'pbkdf2:sha256:600000$XXXXXXXXXXXXXXXX$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', 1);
+VALUES ('admin', 'REPLACE_WITH_SECURE_HASH', 1);
 
--- IMPORTANT: Replace the placeholder password hash above with a secure hash generated using the following Python code:
+-- IMPORTANT: Replace 'REPLACE_WITH_SECURE_HASH' above with a secure hash generated using the following Python code:
 -- from werkzeug.security import generate_password_hash
 -- print(generate_password_hash('your_secure_admin_password'))
 -- Do not use the placeholder hash in production!
