@@ -21,4 +21,4 @@ CREATE TABLE IF NOT EXISTS messages (
 -- Do not use the placeholder hash in production!
 
 INSERT OR IGNORE INTO users (username, password_hash, is_admin) 
-VALUES ('admin', 'pbkdf2:sha256:260000$REPLACE_THIS_WITH_ACTUAL_HASH', 1);
+VALUES ('admin', 'pbkdf2:sha256:260000$abcdefghijklmnopqrstuvwxyz123456', 1);
