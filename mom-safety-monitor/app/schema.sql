@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp DATETIME NOT NULL,
+    timestamp TEXT NOT NULL,
     status TEXT,
     action TEXT,
     acknowledged INTEGER DEFAULT 0,

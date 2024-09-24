@@ -150,7 +150,7 @@ def logout():
 @bp.route('/get_latest_data')
 def get_latest_data():
     mqtt_client = MQTTClient._instance
-    messages = get_messages()[:5]  # Get the 5 most recent messages
+    messages = get_messages(limit=5)  # Get the 5 most recent messages
     amsterdam_tz = pytz.timezone('Europe/Amsterdam')
     formatted_messages = []
     for message in messages:
@@ -168,14 +168,14 @@ def get_latest_data():
     
     return jsonify({
         "button_status": {
-            "status": mqtt_client._button_status,
-            "action": mqtt_client._last_action if hasattr(mqtt_client, '_last_action') else None
+            "status": mqtt_client._button_status if mqtt_client else "Unknown",
+            "action": mqtt_client._last_action if mqtt_client and hasattr(mqtt_client, '_last_action') else None
         },
         "device_status": {
-            "battery": mqtt_client._battery_status,
-            "charger": mqtt_client._charger_status,
-            "wifi": mqtt_client._wifi_status,
-            "last_seen": mqtt_client._last_seen
+            "battery": mqtt_client._battery_status if mqtt_client else "Unknown",
+            "charger": mqtt_client._charger_status if mqtt_client else "Unknown",
+            "wifi": mqtt_client._wifi_status if mqtt_client else "Unknown",
+            "last_seen": mqtt_client._last_seen if mqtt_client else "Unknown"
         },
         "events": formatted_messages
     })

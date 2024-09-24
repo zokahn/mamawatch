@@ -54,9 +54,15 @@ def get_messages(limit=None, include_unacknowledged=False):
     conn = sqlite3.connect(DATABASE)
     c = conn.cursor()
     if include_unacknowledged:
-        c.execute("SELECT * FROM messages WHERE acknowledged = 0 OR id IN (SELECT id FROM messages ORDER BY timestamp DESC LIMIT ?) ORDER BY timestamp DESC", (limit,))
+        if limit is not None:
+            c.execute("SELECT * FROM messages WHERE acknowledged = 0 OR id IN (SELECT id FROM messages ORDER BY timestamp DESC LIMIT ?) ORDER BY timestamp DESC", (limit,))
+        else:
+            c.execute("SELECT * FROM messages WHERE acknowledged = 0 OR id IN (SELECT id FROM messages ORDER BY timestamp DESC) ORDER BY timestamp DESC")
     else:
-        c.execute("SELECT * FROM messages ORDER BY timestamp DESC LIMIT ?", (limit,))
+        if limit is not None:
+            c.execute("SELECT * FROM messages ORDER BY timestamp DESC LIMIT ?", (limit,))
+        else:
+            c.execute("SELECT * FROM messages ORDER BY timestamp DESC")
     messages = [list(row) for row in c.fetchall()]
     conn.close()
     return messages
