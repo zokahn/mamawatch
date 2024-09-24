@@ -23,6 +23,9 @@ VALUES ('admin', 'REPLACE_WITH_SECURE_HASH', 1);
 -- print(generate_password_hash('your_admin_password'))
 -- Do not use the placeholder hash in production!
 -- from werkzeug.security import generate_password_hash
+-- print(generate_password_hash('your_admin_password'))
+-- Do not use the placeholder hash in production!
+-- from werkzeug.security import generate_password_hash
 -- print(generate_password_hash('your_secure_admin_password'))
 -- Do not use the placeholder hash in production!
 -- To generate a secure hash, use the following Python code:
