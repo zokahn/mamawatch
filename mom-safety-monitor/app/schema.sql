@@ -21,4 +21,4 @@ CREATE TABLE IF NOT EXISTS messages (
 -- Do not use the placeholder hash in production!
 
 INSERT OR IGNORE INTO users (username, password_hash, is_admin) 
-VALUES ('admin', 'REPLACE_WITH_SECURE_HASH', 1);
+VALUES ('admin', 'generated_secure_hash_here', 1);
